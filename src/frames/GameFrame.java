@@ -9,6 +9,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 public class GameFrame extends JFrame {
 	private Charakter spieler;
@@ -59,6 +60,19 @@ public class GameFrame extends JFrame {
 		firstButton.addActionListener(e -> 
 			setScene("draußen")
 		);
+		secondButton.addActionListener(e ->
+			setScene("laden")
+		);
+		thirdButton.addActionListener(e -> {
+			if(spieler.getHp()<100) {
+			spieler.setHp(spieler.getHp()+10);
+			}
+			else {
+				text.setText("Du hast bereits maximales Leben.");
+				
+			}
+			aktualisiereAnzeige();
+		});
 		
 		
 		
@@ -66,8 +80,8 @@ public class GameFrame extends JFrame {
 	}
 	
 	private void setScene(String ort) {
-        for (var b : new JButton[]{firstButton, secondButton, thirdButton}) {
-            for (var al : b.getActionListeners()) {
+        for (JButton b : new JButton[]{firstButton, secondButton, thirdButton}) {
+            for (java.awt.event.ActionListener al : b.getActionListeners()) {
                 b.removeActionListener(al);
             }
         }
@@ -80,12 +94,19 @@ public class GameFrame extends JFrame {
 			thirdButton.setText("Gehe zurück ins Dorf");
 			firstButton.addActionListener(e -> setScene("wald"));
 			secondButton.addActionListener(e -> setScene("dragon"));
+			thirdButton.addActionListener(e -> setScene("dorf"));
+			break;
 		case "wald":
+			secondButton.setVisible(true);
+			thirdButton.setVisible(true);
 			text.setText("Triff eine Wahl");
 			firstButton.setText("Wolf bekämpfen");
 			secondButton.setText("Goblins bekämpfen");
 			thirdButton.setText("Gehe zurück Richtung Dorf");
 			firstButton.addActionListener(e -> setScene("wolf"));
+			thirdButton.addActionListener(e -> setScene("dorf"));
+			secondButton.addActionListener(e -> setScene("goblins"));
+			break;
 		case "wolf":
 			Enemy wolf = new Enemy("Wolf", 30, 1);
 			text.setText("Der Wolf hat 30 Lebenspunkte.");
@@ -93,6 +114,49 @@ public class GameFrame extends JFrame {
 			secondButton.setText("Ausweichen");
 			thirdButton.setText("Renn weg.");
 			firstButton.addActionListener(e -> fight(wolf, spieler));
+			thirdButton.addActionListener(e -> setScene("wald"));
+			
+		break;
+
+		case "dorf":
+			firstButton.setText("Verlasse das Dorf");
+			secondButton.setText("Gehe in den Dorfladen");
+			thirdButton.setText("Ruh dich aus.");
+			
+			firstButton.addActionListener(e -> 
+			setScene("draußen")
+			);
+		secondButton.addActionListener(e ->
+			setScene("laden")
+			);
+		thirdButton.addActionListener(e -> {
+			if(spieler.getHp()<100) {
+			spieler.setHp(spieler.getHp()+10);
+			}
+			else {
+				text.setText("Du hast bereits maximales Leben.");
+				
+			}
+			aktualisiereAnzeige();
+		});
+		text.setText("<html>Du befindest dich auf dem Dorfplatz. <br>Entscheide, was du als nächstes tun möchtest. <br>Gehe dich im Laden ausrüsten, verlasse das Dorf oder bleibe noch etwas, <br>um zu Kräften zu kommen.</html>");
+		
+		break;
+		case "laden":
+			text.setText("Im Dorfladen gibt es Waffen zu kaufen. Sieh dich um.");
+			firstButton.setText("Besseres Schwert kaufen");
+			secondButton.setText("Besseren Zauberstab kaufen");
+			thirdButton.setText("Gehe zurück ins Dorf");
+			thirdButton.addActionListener(e -> setScene("dorf"));
+			break;
+		case "goblins":
+			Enemy goblins = new Enemy("Goblins", 60, 3);
+			text.setText("Die Goblins haben zusammen 80 Lebenspunkte.");
+			firstButton.setText("Angriff!");
+			secondButton.setText("Ausweichen");
+			thirdButton.setText("Renn weg.");
+			firstButton.addActionListener(e -> fight(goblins, spieler));
+			thirdButton.addActionListener(e -> setScene("wald"));
 		}
 	}
 	
@@ -106,7 +170,12 @@ public class GameFrame extends JFrame {
 		
 		if(monster.getHp() <= 0) {
 			text.setText("Du hast den Gegner besiegt. Du erhälst Erfahrung.");
-			spieler.setEp(player.getEp()+20);
+			spieler.setEp(player.getEp()+ 20*monster.getStrength());
+			aktualisiereAnzeige();
+			secondButton.setVisible(false);
+			thirdButton.setVisible(false);
+			firstButton.setText("Gehe zurück");
+			firstButton.addActionListener(e -> SwingUtilities.invokeLater(() ->  setScene("wald")));
 		}
 		else if(player.getHp() <= 0){
 			text.setText("Du bist tot. GAME OVER!");
@@ -117,6 +186,10 @@ public class GameFrame extends JFrame {
 		text.setText("Der Wolf hat noch " + monster.getHp() + " Lebenspunkte.");
 	}
 	}
+	}
+	public void aktualisiereAnzeige() {
+		spielerHp.setText("Lebenspunkte: " + spieler.getHp() + " | ");
+		spielerEp.setText("Erfahrung: " + spieler.getEp() + " | ");
 	}
 }
 
