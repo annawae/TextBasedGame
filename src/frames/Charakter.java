@@ -6,13 +6,17 @@ public class Charakter {
 	int hp;
 	int ep;
 	int strength;
+	int gold;
+	boolean shield;
 	
-	public Charakter(String name, String weapon, int hp, int ep, int strength) {
+	public Charakter(String name, String weapon, int hp, int ep, int strength, int gold, boolean shield) {
 		this.name = name;
 		this.ep = ep;
 		this.weapon = weapon;
 		this.hp = hp;
 		this.strength = strength;
+		this.gold = gold;
+		this.shield = shield;
 	}
 	
 	public void setName(String newName) {
@@ -43,11 +47,23 @@ public class Charakter {
 		return ep;
 	}
 	
-	public void setSrength(int newStrength) {
+	public void setStrength(int newStrength) {
 		this.strength = newStrength;
 	}
 	public int getStrength() {
 		return strength;
 	}
 	
+	public void setGold(int newGold) {
+		this.gold = newGold;
+	}
+	public int getGold() {
+		return gold;
+	}
+	public void setShield(boolean newShield) {
+		this.shield = newShield;
+	}
+	public boolean getShield() {
+		return shield;
+	}
 }

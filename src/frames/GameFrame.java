@@ -18,6 +18,8 @@ public class GameFrame extends JFrame {
 	Random random = new Random();
 	JLabel spielerHp;
 	JLabel spielerEp;
+	JLabel spielerWeapon;
+	JLabel spielerGold;
 	
 	public GameFrame(Charakter spieler) {
 		this.spieler = spieler;
@@ -37,9 +39,12 @@ public class GameFrame extends JFrame {
 		spielerEp = new JLabel("Erfahrung: " + spieler.getEp() + " | ");
 		spielerAnzeige.add(spielerEp);
 		spielerEp.setFont(new Font("Arial", Font.PLAIN, 24));
-		JLabel spielerWeapon= new JLabel("Waffe: " + spieler.getWeapon() + " | ");
+		spielerWeapon= new JLabel("Waffe: " + spieler.getWeapon() + " | ");
 		spielerAnzeige.add(spielerWeapon);
 		spielerWeapon.setFont(new Font("Arial", Font.PLAIN, 24));
+		spielerGold = new JLabel("Gold:" + spieler.getGold());
+		spielerGold.setFont(new Font("Arial", Font.PLAIN, 24));
+		spielerAnzeige.add(spielerGold);
 		
 		JPanel textContainer = new JPanel();
 		this.add(textContainer, BorderLayout.CENTER);
@@ -75,7 +80,7 @@ public class GameFrame extends JFrame {
 		});
 		
 		
-		
+		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setVisible(true);
 	}
 	
@@ -115,6 +120,7 @@ public class GameFrame extends JFrame {
 			thirdButton.setText("Renn weg.");
 			firstButton.addActionListener(e -> fight(wolf, spieler));
 			thirdButton.addActionListener(e -> setScene("wald"));
+			secondButton.addActionListener(e -> ausweichen(wolf, spieler));
 			
 		break;
 
@@ -144,10 +150,12 @@ public class GameFrame extends JFrame {
 		break;
 		case "laden":
 			text.setText("Im Dorfladen gibt es Waffen zu kaufen. Sieh dich um.");
-			firstButton.setText("Besseres Schwert kaufen");
-			secondButton.setText("Besseren Zauberstab kaufen");
+			firstButton.setText("Bessere Waffe kaufen");
+			secondButton.setText("Schild kaufen");
 			thirdButton.setText("Gehe zurück ins Dorf");
 			thirdButton.addActionListener(e -> setScene("dorf"));
+			firstButton.addActionListener(e -> buyWeapon(spieler));
+			secondButton.addActionListener(e -> buyShield(spieler));
 			break;
 		case "goblins":
 			Enemy goblins = new Enemy("Goblins", 60, 3);
@@ -157,6 +165,7 @@ public class GameFrame extends JFrame {
 			thirdButton.setText("Renn weg.");
 			firstButton.addActionListener(e -> fight(goblins, spieler));
 			thirdButton.addActionListener(e -> setScene("wald"));
+			secondButton.addActionListener(e -> ausweichen(goblins, spieler));
 		}
 	}
 	
@@ -169,8 +178,9 @@ public class GameFrame extends JFrame {
 		
 		
 		if(monster.getHp() <= 0) {
-			text.setText("Du hast den Gegner besiegt. Du erhälst Erfahrung.");
+			text.setText("Du hast den Gegner besiegt. Du erhälst Erfahrung und Gold.");
 			spieler.setEp(player.getEp()+ 20*monster.getStrength());
+			spieler.setGold(spieler.getGold()+(10*monster.getStrength()));
 			aktualisiereAnzeige();
 			secondButton.setVisible(false);
 			thirdButton.setVisible(false);
@@ -179,7 +189,7 @@ public class GameFrame extends JFrame {
 		}
 		else if(player.getHp() <= 0){
 			text.setText("Du bist tot. GAME OVER!");
-
+			
 		}else {
 		
 		spielerHp.setText("Lebenspunkte: " + player.getHp() + " | ");
@@ -190,6 +200,47 @@ public class GameFrame extends JFrame {
 	public void aktualisiereAnzeige() {
 		spielerHp.setText("Lebenspunkte: " + spieler.getHp() + " | ");
 		spielerEp.setText("Erfahrung: " + spieler.getEp() + " | ");
+		spielerWeapon.setText("Waffe: " + spieler.getWeapon() + " | ");
+		spielerGold.setText("Gold: " + spieler.getGold());
+	}
+	
+	public void ausweichen(Enemy monster, Charakter player) {
+		if(monster.getHp() >0 && player.getHp() >0) {
+			player.setHp(player.getHp()-monster.getStrength());
+		}
+		aktualisiereAnzeige();
+	}
+	public void buyWeapon(Charakter player) {
+		if(player.getWeapon() == "Schwert" && player.getGold()>=50) {
+			player.setWeapon("Breitschwert");
+			player.setStrength(player.getStrength()+2);
+			player.setGold(player.getGold()-50);
+		}
+		else if(player.getWeapon() == "Breitschwert" && player.getGold()>=100) {
+			player.setWeapon("Feuerschwert");
+			player.setStrength(player.getStrength()+5);
+			player.setGold(player.getGold()-100);
+		}
+		else if(player.getGold()<50) {
+			text.setText("Du hast nicht genug Gold");
+		}
+		else if(player.getWeapon() == "Feuerschwert") {
+			text.setText("Du hast bereits die beste Waffe.");
+		}
+		aktualisiereAnzeige();
+	}
+	
+	public void buyShield(Charakter player) {
+		if(player.getShield() == false && player.getGold()>=30) {
+			player.setShield(true);
+			player.setGold(player.getGold()-30);
+		}
+		else if(player.getShield() == true) {
+			text.setText("Du hast bereits einen Schild");
+		}
+		else if(player.getGold()<30) {
+			text.setText("Du hast nicht genug Gold.");
+		}
 	}
 }
 
