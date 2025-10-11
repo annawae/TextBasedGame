@@ -65,6 +65,7 @@ public class StartFrame extends JFrame {
 			spieler = new Charakter("Schwertkämpfer", "Schwert", 100, 0, 1, 0, false);
 		}
 		new GameFrame(spieler);
+		this.setVisible(false);
 	});
 	
 	

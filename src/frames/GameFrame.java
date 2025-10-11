@@ -189,11 +189,11 @@ public class GameFrame extends JFrame {
 		}
 		else if(player.getHp() <= 0){
 			text.setText("Du bist tot. GAME OVER!");
-			
+			gameOver();
 		}else {
 		
 		spielerHp.setText("Lebenspunkte: " + player.getHp() + " | ");
-		text.setText("Der Wolf hat noch " + monster.getHp() + " Lebenspunkte.");
+		text.setText(monster.getName() + " hat noch " + monster.getHp() + " Lebenspunkte.");
 	}
 	}
 	}
@@ -241,6 +241,15 @@ public class GameFrame extends JFrame {
 		else if(player.getGold()<30) {
 			text.setText("Du hast nicht genug Gold.");
 		}
+	}
+	public void gameOver() {
+		secondButton.setVisible(false);
+		thirdButton.setVisible(false);
+		firstButton.setText("Neues Spiel starten.");
+		firstButton.addActionListener(e -> {
+			new StartFrame();
+			this.setVisible(false);
+		});
 	}
 }
 
