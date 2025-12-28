@@ -1,15 +1,21 @@
 package frames;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Font;
 import java.util.Random;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.SoftBevelBorder;
+import javax.swing.border.TitledBorder;
 
 public class GameFrame extends JFrame {
 	private Charakter spieler;
@@ -21,37 +27,74 @@ public class GameFrame extends JFrame {
 	JLabel spielerWeapon;
 	JLabel spielerGold;
 	
+	JLabel picture = new JLabel();
+	ImageIcon dorf = new ImageIcon(getClass().getResource("/grafiken/dorfplatz.png"));
+	ImageIcon vorDemDorf = new ImageIcon(getClass().getResource("/grafiken/vorDemDorf.png"));
+	ImageIcon wald = new ImageIcon(getClass().getResource("/grafiken/wald.png"));
+	ImageIcon goblinsBild = new ImageIcon(getClass().getResource("/grafiken/goblins.png"));
+	ImageIcon wolfBild = new ImageIcon(getClass().getResource("/grafiken/wolf.png"));
+	ImageIcon wolfBildBW= new ImageIcon(getClass().getResource("/grafiken/wolf_bw.png"));
+	ImageIcon goblinsBW= new ImageIcon(getClass().getResource("/grafiken/goblins_bw.png"));
+	
 	public GameFrame(Charakter spieler) {
 		this.spieler = spieler;
 		this.setSize(1000,650);
 		this.setLayout(new BorderLayout(20,20));
+
+		//Hintergrundfarbe für alle Elemente erstellen:
+		Color hintergrundfarbe = new Color(87, 152, 242);
+		this.getContentPane().setBackground(hintergrundfarbe);
+		
+		
 		JPanel spielerAnzeige = new JPanel();
 		this.add(spielerAnzeige,BorderLayout.NORTH);
 		spielerAnzeige.setLayout(new BoxLayout(spielerAnzeige, BoxLayout.X_AXIS));
-		
+		spielerAnzeige.setBackground(hintergrundfarbe);
+		TitledBorder rahmen = BorderFactory.createTitledBorder("Spieler Werte");
+		spielerAnzeige.setBorder(rahmen);
+		rahmen.setTitleFont(new Font("Arial", Font.BOLD, 22));
 		
 		JLabel spielerCharakter = new JLabel(spieler.getName() + " | ");
 		spielerAnzeige.add(spielerCharakter);
-		spielerCharakter.setFont(new Font("Arial", Font.BOLD, 24));
+		spielerCharakter.setFont(new Font("Arial", Font.BOLD, 26));
 		spielerHp = new JLabel("Lebenspunkte: " + spieler.getHp() + " | ");
 		spielerAnzeige.add(spielerHp);
-		spielerHp.setFont(new Font("Arial", Font.PLAIN, 24));
+		spielerHp.setFont(new Font("Arial", Font.PLAIN, 26));
 		spielerEp = new JLabel("Erfahrung: " + spieler.getEp() + " | ");
 		spielerAnzeige.add(spielerEp);
-		spielerEp.setFont(new Font("Arial", Font.PLAIN, 24));
+		spielerEp.setFont(new Font("Arial", Font.PLAIN, 26));
 		spielerWeapon= new JLabel("Waffe: " + spieler.getWeapon() + " | ");
 		spielerAnzeige.add(spielerWeapon);
-		spielerWeapon.setFont(new Font("Arial", Font.PLAIN, 24));
+		spielerWeapon.setFont(new Font("Arial", Font.PLAIN, 26));
 		spielerGold = new JLabel("Gold:" + spieler.getGold());
-		spielerGold.setFont(new Font("Arial", Font.PLAIN, 24));
+		spielerGold.setFont(new Font("Arial", Font.PLAIN, 26));
 		spielerAnzeige.add(spielerGold);
 		
+		JPanel contentContainer = new JPanel();
+		this.add(contentContainer, BorderLayout.CENTER);
+		contentContainer.setBackground(hintergrundfarbe);
+		
 		JPanel textContainer = new JPanel();
-		this.add(textContainer, BorderLayout.CENTER);
+		contentContainer.add(textContainer, BorderLayout.NORTH);
 		text = new JLabel("<html>Du befindest dich auf dem Dorfplatz. <br>Entscheide, was du als nächstes tun möchtest. <br>Gehe dich im Laden ausrüsten, verlasse das Dorf oder bleibe noch etwas, <br>um zu Kräften zu kommen.</html>");
 		
+		textContainer.setBackground(hintergrundfarbe);
 		textContainer.add(text);
 		text.setFont(new Font("Arial", Font.PLAIN, 24));
+		
+		
+		//Bild einfügen:
+		
+		JPanel bild = new JPanel();
+		contentContainer.add(bild, BorderLayout.CENTER);
+		contentContainer.setLayout(new BoxLayout(contentContainer, BoxLayout.Y_AXIS));
+		contentContainer.setBackground(hintergrundfarbe);
+		bild.setBackground(hintergrundfarbe);
+		bild.add(picture);
+		picture.setIcon(dorf);
+		picture.setBorder(new SoftBevelBorder(BevelBorder.LOWERED));
+		
+		Font buttonSchrift = new Font("Arial", Font.BOLD, 22);
 		
 		JPanel buttons = new JPanel();
 		this.add(buttons, BorderLayout.SOUTH);
@@ -61,6 +104,12 @@ public class GameFrame extends JFrame {
 		buttons.add(secondButton);
 		thirdButton = new JButton("Ruhe dich aus.");
 		buttons.add(thirdButton);
+		
+		buttons.setBackground(hintergrundfarbe);
+		
+		firstButton.setFont(buttonSchrift);
+		secondButton.setFont(buttonSchrift);
+		thirdButton.setFont(buttonSchrift);
 		
 		firstButton.addActionListener(e -> 
 			setScene("draußen")
@@ -94,6 +143,7 @@ public class GameFrame extends JFrame {
 		switch(ort) {
 		case "draußen":
 			text.setText("Wohin möchtest du gehen?");
+			picture.setIcon(vorDemDorf);
 			firstButton.setText("Den Wald betreten");
 			secondButton.setText("Auf dem Weg bleiben");
 			thirdButton.setText("Gehe zurück ins Dorf");
@@ -105,6 +155,7 @@ public class GameFrame extends JFrame {
 			secondButton.setVisible(true);
 			thirdButton.setVisible(true);
 			text.setText("Triff eine Wahl");
+			picture.setIcon(wald);
 			firstButton.setText("Wolf bekämpfen");
 			secondButton.setText("Goblins bekämpfen");
 			thirdButton.setText("Gehe zurück Richtung Dorf");
@@ -115,6 +166,7 @@ public class GameFrame extends JFrame {
 		case "wolf":
 			Enemy wolf = new Enemy("Wolf", 30, 1);
 			text.setText("Der Wolf hat 30 Lebenspunkte.");
+			picture.setIcon(wolfBild);
 			firstButton.setText("Angriff!");
 			secondButton.setText("Ausweichen");
 			thirdButton.setText("Renn weg.");
@@ -128,7 +180,7 @@ public class GameFrame extends JFrame {
 			firstButton.setText("Verlasse das Dorf");
 			secondButton.setText("Gehe in den Dorfladen");
 			thirdButton.setText("Ruh dich aus.");
-			
+			picture.setIcon(dorf);
 			firstButton.addActionListener(e -> 
 			setScene("draußen")
 			);
@@ -159,7 +211,8 @@ public class GameFrame extends JFrame {
 			break;
 		case "goblins":
 			Enemy goblins = new Enemy("Goblins", 60, 3);
-			text.setText("Die Goblins haben zusammen 80 Lebenspunkte.");
+			text.setText("<html>Die Goblins haben zusammen 80 Lebenspunkte.<br></html>");
+			picture.setIcon(goblinsBild);
 			firstButton.setText("Angriff!");
 			secondButton.setText("Ausweichen");
 			thirdButton.setText("Renn weg.");
@@ -186,6 +239,8 @@ public class GameFrame extends JFrame {
 			thirdButton.setVisible(false);
 			firstButton.setText("Gehe zurück");
 			firstButton.addActionListener(e -> SwingUtilities.invokeLater(() ->  setScene("wald")));
+			monsterDead(monster.name);
+
 		}
 		else if(player.getHp() <= 0){
 			text.setText("Du bist tot. GAME OVER!");
@@ -250,6 +305,17 @@ public class GameFrame extends JFrame {
 			new StartFrame();
 			this.setVisible(false);
 		});
+	}
+	
+	public void monsterDead(String name) {
+		switch(name) {
+		case "Wolf":
+			picture.setIcon(wolfBildBW);
+			picture.revalidate();
+			picture.repaint();
+		case "Goblins":
+			picture.setIcon(goblinsBW);
+	}
 	}
 }
 

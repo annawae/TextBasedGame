@@ -1,5 +1,8 @@
 package frames;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 
@@ -20,15 +23,29 @@ public class StartFrame extends JFrame {
 	
 	public StartFrame() {
 	this.setSize(550, 420);
+	this.setLayout(new BorderLayout());
+
 	
 	JPanel container = new JPanel();
-	this.add(container);
+	
 	container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
-	
-	
+	this.add(container, BorderLayout.CENTER);
+
+	container.setBackground(new Color(87, 152, 242));
+
 	JLabel charakterFrage = new JLabel("Wähle einen Charakter");
-	container.add(charakterFrage);
-	charakterFrage.setFont(new Font("Arial", Font.PLAIN, 24));
+	charakterFrage.setAlignmentX(Component.LEFT_ALIGNMENT);
+	
+	
+	
+	JPanel header = new JPanel();
+	header.setLayout(new BoxLayout(header, BoxLayout.X_AXIS));
+	header.add(charakterFrage);
+	container.add(header);
+	
+	header.setBackground(new Color(87, 152, 242));
+
+	charakterFrage.setFont(new Font("Arial", Font.PLAIN, 28));
 	JPanel bilder = new JPanel();
 	container.add(bilder);
 	bilder.setLayout(new BoxLayout(bilder, BoxLayout.X_AXIS));
@@ -39,8 +56,15 @@ public class StartFrame extends JFrame {
 	bilder.add(schwert);
 	schwert.setLayout(new BoxLayout(schwert, BoxLayout.Y_AXIS));
 	
+	schwert.setBackground(new Color(87, 152, 242));
+	magier.setBackground(new Color(87, 152, 242));
+	
+	
+	Font text = new Font("Arial", Font.PLAIN, 22);
 	mage = new JRadioButton("Magier");
 	magier.add(mage);
+	mage.setFont(text);
+	
 
 	JLabel magePicture = new JLabel();
 	magier.add(magePicture);
@@ -52,9 +76,19 @@ public class StartFrame extends JFrame {
 	JLabel swordPicture = new JLabel();
 	swordPicture.setIcon(swordPic);
 	schwert.add(swordPicture);
+	sword.setFont(text);
+	
+	sword.setBackground(new Color(87, 152, 242));
+	mage.setBackground(new Color(87, 152, 242));
+	
+	JPanel fooder = new JPanel();
+	container.add(fooder);
+	fooder.setBackground(new Color(87, 152, 242));
 	
 	JButton startButton = new JButton("Spiel starten!");
-	container.add(startButton);
+	fooder.add(startButton);
+	startButton.setFont(text);
+	startButton.setAlignmentX(Component.LEFT_ALIGNMENT);
 	
 	startButton.addActionListener(e -> {
 		String choice = getCharakter();
