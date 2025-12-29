@@ -165,6 +165,7 @@ public class GameFrame extends JFrame {
 		
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setVisible(true);
+		aktualisiereAnzeige();
 	}
 	//löscht die alten ActionListener:
 	private void setScene(String ort) {
@@ -391,9 +392,31 @@ public class GameFrame extends JFrame {
 			firstButton.addActionListener(e -> trainiereKampf(spieler));
 			secondButton.addActionListener(e -> setScene("stadt"));
 			break;
+		case "dorffest":
+			text.setText("<html>Das ganze Dorf ist wieder auf den Straßen. <br>Sie feiern, dass der Drache sie nicht länger terrorisieren kann."
+					+ "<br>Du kannst am Glückspiel teilnehmen, <br>oder am Turnierkampf.</html>");
+			firstButton.setText("Glücksspiel (Einsatz: 30 Gold)");
+			secondButton.setText("Tunierkampf (Einsatz: 100 Gold)");
+			thirdButton.setText("Dorffest verlassen");
+			firstButton.addActionListener(e -> setScene("gluecksspiel"));
+			secondButton.addActionListener(e -> setScene("tunierkampf"));
+			thirdButton.addActionListener(e -> setScene("stadt"));
+			
+			break;
+		case "gluecksspiel":
+			text.setText("<html>Setze auf Rot oder Schwarz</html>");
+			firstButton.setText("ROT");
+			secondButton.setText("SCHWARZ");
+			thirdButton.setText("Spiel beenden");
+			firstButton.addActionListener(e -> rotOderSchwarz("rot", spieler));
+			secondButton.addActionListener(e -> rotOderSchwarz("schwarz", spieler));
+			thirdButton.addActionListener(e -> setScene("dorffest"));
+			break;
+			
 		case "winner":
 			text.setText("<html>Herzlichen Glückwunsch!<br>Du hast das Spiel gewonnen!</html>");
-			text.setFont(new Font("Castellar Standard", Font.PLAIN, 24));
+			text.setFont(new Font("Castellar", Font.PLAIN, 24));
+			break;
 		}
 	}
 	
@@ -445,9 +468,17 @@ public class GameFrame extends JFrame {
 		if(spieler.getHp() <= 10) {
 			spielerHp.setForeground(Color.RED);
 		}
-			else {
-				spielerHp.setForeground(Color.BLACK);
+			else if(spieler.getHp() > 10 && spieler.getHp() <= 20) {
+				spielerHp.setForeground(Color.ORANGE);
 			}
+			else if(spieler.getHp() > 20 && spieler.getHp() <= 50) {
+				spielerHp.setForeground(Color.YELLOW);
+			}
+			else {
+				spielerHp.setForeground(Color.GREEN);
+			}
+		
+		
 		if(spieler.getWeapon() == "Breitschwert") {
 			spielerWeapon.setForeground(Color.YELLOW);
 		}
@@ -457,6 +488,20 @@ public class GameFrame extends JFrame {
 		else {
 			spielerWeapon.setForeground(Color.BLACK);
 		}
+		
+		if(spieler.getStrength() < 10) {
+			spielerStaerke.setForeground(Color.RED);
+		}
+		else if(spieler.getStrength() >=10 && spieler.getStrength() < 50) {
+			spielerStaerke.setForeground(Color.ORANGE);
+		}
+		else if(spieler.getStrength() >=50 && spieler.getStrength() < 100) {
+			spielerStaerke.setForeground(Color.YELLOW);
+		}
+		else if(spieler.getStrength() >=100) {
+			spielerStaerke.setForeground(Color.GREEN);
+		}
+		
 	}
 	
 	public void ausweichen(Enemy monster, Charakter player) {
@@ -626,6 +671,33 @@ public class GameFrame extends JFrame {
 		player.setGold(player.getGold()-25);
 		player.setHp(100);
 		aktualisiereAnzeige();
+	}
+	
+	public void rotOderSchwarz(String farbe, Charakter player) {
+		int zahl = (Math.random() < 0.5) ? 1 : 2;
+			if(zahl == 1 && farbe.equals("rot")) {
+				text.setText("ROT! Du hast gewonnen.");
+				text.setForeground(Color.GREEN);
+				player.setGold(player.getGold() - 30);
+				player.setGold(player.getGold() + 60);
+			}
+			else if(zahl == 1 && farbe.equals("schwarz")) {
+				text.setText("ROT! Du hast verloren.");
+				text.setForeground(Color.RED);
+				player.setGold(player.getGold() - 30);
+			}
+			else if(zahl == 2 && farbe.equals("rot")) {
+				text.setText("SCHWARZ! Du hast verloren.");
+				text.setForeground(Color.RED);
+				player.setGold(player.getGold() - 30);
+			}
+			else {
+				text.setText("SCHWARZ! Du hast gewonnen.");
+				text.setForeground(Color.GREEN);
+				player.setGold(player.getGold() - 30);
+				player.setGold(player.getGold() + 60);
+			}
+			aktualisiereAnzeige();
 	}
 	
 	public void trainiereKampf(Charakter player) {
