@@ -93,10 +93,10 @@ public class StartFrame extends JFrame {
 	startButton.addActionListener(e -> {
 		String choice = getCharakter();
 		if(choice == "Magier") {
-			spieler = new Charakter("Magier", "Zauberstab", 80, 0, 1, 0, false);
+			spieler = new Charakter("Magier", "Zauberstab", 80, 0, 1, 0, false, false, 0);
 		}
 		else if(choice == "Schwertkämpfer") {
-			spieler = new Charakter("Schwertkämpfer", "Schwert", 100, 0, 20, 0, false);
+			spieler = new Charakter("Schwertkämpfer", "Schwert", 100, 1000, 100, 1000, false, false, 0);
 		}
 		new GameFrame(spieler);
 		this.setVisible(false);

@@ -8,8 +8,10 @@ public class Charakter {
 	int strength;
 	int gold;
 	boolean shield;
+	boolean amulett;
+	int bier;
 	
-	public Charakter(String name, String weapon, int hp, int ep, int strength, int gold, boolean shield) {
+	public Charakter(String name, String weapon, int hp, int ep, int strength, int gold, boolean shield, boolean amulett, int bier) {
 		this.name = name;
 		this.ep = ep;
 		this.weapon = weapon;
@@ -17,6 +19,8 @@ public class Charakter {
 		this.strength = strength;
 		this.gold = gold;
 		this.shield = shield;
+		this.amulett = amulett;
+		this.bier = bier;
 	}
 	
 	public void setName(String newName) {
@@ -65,5 +69,20 @@ public class Charakter {
 	}
 	public boolean getShield() {
 		return shield;
+	}
+	
+	public void setAmulett(boolean newAmulett) {
+		this.amulett = newAmulett;	
+	}
+	public boolean getAmulett() {
+		return amulett;
+	}
+	
+	public void setBier(int newBier) {
+		this.bier = newBier;
+	}
+	
+	public int getBier() {
+		return bier;
 	}
 }

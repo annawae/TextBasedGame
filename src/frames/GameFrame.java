@@ -29,6 +29,7 @@ public class GameFrame extends JFrame {
 	JLabel spielerGold;
 	
 	int dracheBesiegt = 0;
+	int bier = 0;
 	Enemy harlunke = new Enemy("Harlunke", 100, 6);
 	Enemy drache = new Enemy("Drache", 250, 15);
 	
@@ -269,7 +270,7 @@ public class GameFrame extends JFrame {
 			thirdButton.setVisible(true);
 			firstButton.setText("Nach Links gehen");
 			secondButton.setText("Nach Rechts gehen");
-			thirdButton.setText("Zurück gehen");
+			thirdButton.setText("Zum Dorf zurückkehren");
 			thirdButton.addActionListener(e -> setScene("draußen"));
 			firstButton.addActionListener(e -> setScene("flusstal"));
 			secondButton.addActionListener(e -> setScene("drachenberg"));
@@ -327,7 +328,9 @@ public class GameFrame extends JFrame {
 			thirdButton.setText("Vorsichtig zurückziehen");
 			firstButton.addActionListener(e -> setScene("dragon"));
 			secondButton.addActionListener(e -> setScene("drachenberg"));
-			thirdButton.addActionListener(e -> setScene("dragon"));
+			thirdButton.addActionListener(e -> {setScene("dragon");
+												text.setText("Du versuchst leise davon zu schleichen. Doch der Drache bemerkt dich sofort.");
+												});
 			
 			break;
 		case "stadt": 
@@ -338,6 +341,7 @@ public class GameFrame extends JFrame {
 					firstButton.setText("Taverne aufsuchen");
 					secondButton.setText("Kaserne betreten");
 					thirdButton.setText("Stadt verlassen");
+					thirdButton.setVisible(true);
 					firstButton.addActionListener(e -> setScene("taverne"));
 					secondButton.addActionListener(e -> setScene("kaserne"));
 					thirdButton.addActionListener(e -> setScene("flusstal"));
@@ -349,14 +353,33 @@ public class GameFrame extends JFrame {
 				firstButton.setText("An Dorffest teilnehmen.");
 				secondButton.setText("Haus kaufen");
 				thirdButton.setText("Stadt verlassen");
+				thirdButton.setVisible(true);
 				firstButton.addActionListener(e -> setScene("dorffest"));
 				secondButton.addActionListener(e -> hausKaufen(spieler));
 				thirdButton.addActionListener(e -> setScene("flusstal"));
 			}
 			break;
 		case "taverne":
-			
-			
+				text.setText("<html>Hier herrscht ausgelassene Stimmung. <br>Trinke ein paar Bierchen oder nimm dir ein Zimmer um dich zu erholen.</html>");
+				firstButton.setText("Trinke ein Bier (5 Gold)");
+				secondButton.setText("Nimm dir ein Zimmer (25 Gold)");
+				thirdButton.setText("Verlasse die Taverne");
+				firstButton.addActionListener(e -> bierTrinken(spieler));
+				secondButton.addActionListener(e -> ausschlafen(spieler));
+				thirdButton.addActionListener(e -> setScene("dorffest"));
+			break;
+		case "kaserne":
+			text.setText("<html>Du betrittst die Kaserne.<br>Hier kannst du deine Kampffähikeiten trainieren.<br>"
+					+ "du musst nur genug Erfahrung mitbringen.</html>");
+			firstButton.setText("Kampf trainieren (30 Erfahrung)");
+			secondButton.setText("zurück");
+			thirdButton.setVisible(false);
+			firstButton.addActionListener(e -> trainiereKampf(spieler));
+			secondButton.addActionListener(e -> setScene("stadt"));
+			break;
+		case "winner":
+			text.setText("<html>Herzlichen Glückwunsch!<br>Du hast das Spiel gewonnen!</html>");
+			text.setFont(new Font("Castellar Standard", Font.PLAIN, 24));
 		}
 	}
 	
@@ -376,7 +399,13 @@ public class GameFrame extends JFrame {
 			secondButton.setVisible(false);
 			thirdButton.setVisible(false);
 			firstButton.setText("Gehe zurück");
-			firstButton.addActionListener(e -> SwingUtilities.invokeLater(() ->  setScene("wald")));
+			firstButton.addActionListener(e -> SwingUtilities.invokeLater(() -> {
+			    if (monster.getName().equals("goblins") || monster.getName().equals("wolf")) {
+			        setScene("wald");
+			    } else {
+			        setScene("kreuzung");
+			    }
+			}));
 			monsterDead(monster.name);
 
 		}
@@ -446,8 +475,8 @@ public class GameFrame extends JFrame {
             for (java.awt.event.ActionListener al : b.getActionListeners()) {
                 b.removeActionListener(al);
             }}
-		firstButton.setText("Magieramulett kaufen");
-		secondButton.setText("Kriegeramulett kaufen");
+		firstButton.setText("Magieramulett kaufen (70 Gold)");
+		secondButton.setText("Kriegeramulett kaufen (70 Gold)");
 		thirdButton.setText("Handel beenden");
 		thirdButton.addActionListener(e -> setScene("flusstal"));
 		firstButton.addActionListener(e -> magieAmulettKaufen(player));
@@ -455,29 +484,36 @@ public class GameFrame extends JFrame {
 		aktualisiereAnzeige();
 	}
 	
-	//Amulett kann noch trotz zu wenig geld gekauft werden
+
 	public void magieAmulettKaufen(Charakter player) {
-		int zaehler = 0;
-		if(player.name == "Magier" && zaehler < 1) {
+		
+		if(player.getName().equals("Magier") && player.getAmulett() == false && player.getGold() >= 70) {
 			player.setGold(player.getGold()-70);
 			player.setStrength(player.getStrength() + 5);
-			zaehler++;
+			player.setAmulett(true);
+		}
+		else if(player.getGold() < 70) {
+			text.setText("Du hast nicht genug Gold.");
 		}
 		else {
-			text.setText("Du kannst dieses Amulett nicht kaufen. Entweder besitzt du es bereits oder es passt nicht zu deiner Spielerklasse.");
+			text.setText("<html>Du kannst dieses Amulett nicht kaufen. <br>Entweder besitzt du es bereits oder es passt nicht zu deiner Spielerklasse.</html>");
 		}
 	}
 	
 	public void kriegerAmulettKaufen(Charakter player) {
-		int zaehler = 0;
-		if(player.name == "Schwertkämpfer" && zaehler < 1) {
+		
+		if(player.getName().equals("Schwertkämpfer") && player.getAmulett() == false && player.getGold() >= 70) {
 			player.setGold(player.getGold() - 70);
 			player.setStrength(player.getStrength() + 5);
-			zaehler++;
+			player.setAmulett(true);
+		}
+		else if(player.getGold() < 70) {
+			text.setText("Du hast nicht genug Gold.");
 		}
 		else {
 			text.setText("Du kannst dieses Amulett nicht kaufen. Entweder besitzt du es bereits oder es passt nicht zu deiner Spielerklasse.");
 		}
+		aktualisiereAnzeige();
 	}
 	
 	
@@ -492,6 +528,7 @@ public class GameFrame extends JFrame {
 		else if(player.getGold()<30) {
 			text.setText("Du hast nicht genug Gold.");
 		}
+		aktualisiereAnzeige();
 	}
 	public void gameOver() {
 		secondButton.setVisible(false);
@@ -517,6 +554,7 @@ public class GameFrame extends JFrame {
 	}
 	}
 	public void goldGeben(Charakter player) {
+		
 		if(player.getGold() < 100) {
 			text.setText("Du hast nicht genug Gold");
 		}
@@ -525,6 +563,61 @@ public class GameFrame extends JFrame {
 		// setScene hier noch
 		setScene("kreuzung");
 		}
+	}
+	public void hausKaufen(Charakter player) {
+		for (JButton b : new JButton[]{firstButton, secondButton, thirdButton}) {
+            for (java.awt.event.ActionListener al : b.getActionListeners()) {
+                b.removeActionListener(al);
+            }}
+		text.setText("<html>Da du der Drachentöter bist, darfst du dir ein Haus kaufen. <br>Es kostet 1000 Gold."
+				+ "<br>Mit Kauf des Hauses hast das Ziel des Spiels erreicht und gewonnen. </html>");
+		firstButton.setText("Haus kaufen (1000 Gold)");
+		secondButton.setText("Zurück");
+		thirdButton.setVisible(false);
+		firstButton.addActionListener(e -> {if(player.getGold()>=1000) {
+												player.setGold(player.getGold()-1000);
+												setScene("winner");
+												}
+		});
+	}
+	
+	public void bierTrinken(Charakter player) {
+		
+		if(player.getBier() < 5) {
+			player.setGold(player.getGold()-5);
+			player.setBier(player.getBier()+1);
+			text.setText("Das Bier schmeckt köstlich.");
+		}
+		else if(player.getBier() < 8) {
+			player.setGold(player.getGold()-5);
+			player.setBier(player.getBier()+1);
+			text.setText("Es schmeckt zu gut. Langsam wirst du benebelt.");
+			player.setHp(player.getHp()-5);
+		}
+		else{
+			text.setText("Das war zu viel. Dir wird schwarz vor Augen.");
+			player.setHp(5);
+			player.setBier(0);
+			setScene("dorf");
+		}
+	
+		aktualisiereAnzeige();
+	}
+	
+	public void ausschlafen(Charakter player) {
+		player.setGold(player.getGold()-25);
+		player.setHp(100);
+	}
+	
+	public void trainiereKampf(Charakter player) {
+		if(player.getEp() > 30) {
+			player.setStrength(player.getStrength()+5);
+			player.setEp(player.getEp()-30);
+		}
+		else {
+			text.setText("Du hast nicht genug Erfahrung");
+		}
+		aktualisiereAnzeige();
 	}
 }
 
