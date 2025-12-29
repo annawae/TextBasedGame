@@ -14,6 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
+import javax.swing.border.Border;
 import javax.swing.border.SoftBevelBorder;
 import javax.swing.border.TitledBorder;
 
@@ -27,6 +28,10 @@ public class GameFrame extends JFrame {
 	JLabel spielerWeapon;
 	JLabel spielerGold;
 	
+	int dracheBesiegt = 0;
+	Enemy harlunke = new Enemy("Harlunke", 100, 6);
+	Enemy drache = new Enemy("Drache", 250, 15);
+	
 	JLabel picture = new JLabel();
 	ImageIcon dorf = new ImageIcon(getClass().getResource("/grafiken/dorfplatz.png"));
 	ImageIcon vorDemDorf = new ImageIcon(getClass().getResource("/grafiken/vorDemDorf.png"));
@@ -35,6 +40,10 @@ public class GameFrame extends JFrame {
 	ImageIcon wolfBild = new ImageIcon(getClass().getResource("/grafiken/wolf.png"));
 	ImageIcon wolfBildBW= new ImageIcon(getClass().getResource("/grafiken/wolf_bw.png"));
 	ImageIcon goblinsBW= new ImageIcon(getClass().getResource("/grafiken/goblins_bw.png"));
+	ImageIcon gameOver = new ImageIcon(getClass().getResource("/grafiken/gameOver.jpg"));
+	ImageIcon flusstal = new ImageIcon(getClass().getResource("/grafiken/flusstal.png"));
+	
+	//Stadt buttons fehlen
 	
 	public GameFrame(Charakter spieler) {
 		this.spieler = spieler;
@@ -52,23 +61,36 @@ public class GameFrame extends JFrame {
 		spielerAnzeige.setBackground(hintergrundfarbe);
 		TitledBorder rahmen = BorderFactory.createTitledBorder("Spieler Werte");
 		spielerAnzeige.setBorder(rahmen);
-		rahmen.setTitleFont(new Font("Arial", Font.BOLD, 22));
+		rahmen.setTitleFont(new Font("HP Simplified", Font.BOLD, 22));
 		
-		JLabel spielerCharakter = new JLabel(spieler.getName() + " | ");
+		//Umrandung mit Abstand für Spieler Werte:
+		Border umrandung = BorderFactory.createMatteBorder(2,2,2,0 ,Color.BLACK); 
+		Border abstand = BorderFactory.createEmptyBorder(4, 3, 4, 3);
+		
+		JLabel spielerCharakter = new JLabel(spieler.getName() );
 		spielerAnzeige.add(spielerCharakter);
-		spielerCharakter.setFont(new Font("Arial", Font.BOLD, 26));
-		spielerHp = new JLabel("Lebenspunkte: " + spieler.getHp() + " | ");
+		spielerCharakter.setFont(new Font("Gill Sans", Font.BOLD, 26));
+		spielerCharakter.setBorder(abstand);
+		spielerHp = new JLabel("Lebenspunkte: " + spieler.getHp() );
+		spielerHp.setBorder(BorderFactory.createCompoundBorder(umrandung, abstand));
+		
 		spielerAnzeige.add(spielerHp);
-		spielerHp.setFont(new Font("Arial", Font.PLAIN, 26));
-		spielerEp = new JLabel("Erfahrung: " + spieler.getEp() + " | ");
+		spielerHp.setFont(new Font("HP Simplified", Font.PLAIN, 26));
+		spielerEp = new JLabel("Erfahrung: " + spieler.getEp()  );
+		spielerEp.setBorder(BorderFactory.createCompoundBorder(umrandung, abstand));
+		
 		spielerAnzeige.add(spielerEp);
-		spielerEp.setFont(new Font("Arial", Font.PLAIN, 26));
-		spielerWeapon= new JLabel("Waffe: " + spieler.getWeapon() + " | ");
+		spielerEp.setFont(new Font("HP Simplified", Font.PLAIN, 26));
+		spielerWeapon= new JLabel("Waffe: " + spieler.getWeapon() );
 		spielerAnzeige.add(spielerWeapon);
-		spielerWeapon.setFont(new Font("Arial", Font.PLAIN, 26));
+		spielerWeapon.setFont(new Font("HP Simplified", Font.PLAIN, 26));
+		
+		spielerWeapon.setBorder(BorderFactory.createCompoundBorder(umrandung, abstand));
 		spielerGold = new JLabel("Gold:" + spieler.getGold());
-		spielerGold.setFont(new Font("Arial", Font.PLAIN, 26));
+		spielerGold.setFont(new Font("HP Simplified", Font.PLAIN, 26));
 		spielerAnzeige.add(spielerGold);
+		//Extra Umrandung für Gold damit am Ende ein Strich vorhanden ist
+		spielerGold.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.BLACK), abstand ));
 		
 		JPanel contentContainer = new JPanel();
 		this.add(contentContainer, BorderLayout.CENTER);
@@ -80,10 +102,10 @@ public class GameFrame extends JFrame {
 		
 		textContainer.setBackground(hintergrundfarbe);
 		textContainer.add(text);
-		text.setFont(new Font("Arial", Font.PLAIN, 24));
+		text.setFont(new Font("HP Simplified", Font.PLAIN, 26));
 		
 		
-		//Bild einfügen:
+	    //Bild einfügen
 		
 		JPanel bild = new JPanel();
 		contentContainer.add(bild, BorderLayout.CENTER);
@@ -94,7 +116,7 @@ public class GameFrame extends JFrame {
 		picture.setIcon(dorf);
 		picture.setBorder(new SoftBevelBorder(BevelBorder.LOWERED));
 		
-		Font buttonSchrift = new Font("Arial", Font.BOLD, 22);
+		Font buttonSchrift = new Font("Gill Sans", Font.BOLD, 22);
 		
 		JPanel buttons = new JPanel();
 		this.add(buttons, BorderLayout.SOUTH);
@@ -148,8 +170,9 @@ public class GameFrame extends JFrame {
 			secondButton.setText("Auf dem Weg bleiben");
 			thirdButton.setText("Gehe zurück ins Dorf");
 			firstButton.addActionListener(e -> setScene("wald"));
-			secondButton.addActionListener(e -> setScene("dragon"));
+			secondButton.addActionListener(e -> setScene("wegFolgen"));
 			thirdButton.addActionListener(e -> setScene("dorf"));
+			aktualisiereAnzeige();
 			break;
 		case "wald":
 			secondButton.setVisible(true);
@@ -162,7 +185,25 @@ public class GameFrame extends JFrame {
 			firstButton.addActionListener(e -> setScene("wolf"));
 			thirdButton.addActionListener(e -> setScene("dorf"));
 			secondButton.addActionListener(e -> setScene("goblins"));
+			aktualisiereAnzeige();
 			break;
+			
+			//weg muss nach gewonnenem kampf weitergehen
+		case "wegFolgen":
+
+			text.setText("Du begegnest einem Harlunken");
+			firstButton.setText("Harlunken angreifen");
+			secondButton.setText("Dem Harlunken Wegzoll zahlen (100 Gold)");
+			thirdButton.setText("Zurück gehen");
+			firstButton.addActionListener(e -> {fight(harlunke, spieler); 
+													if(harlunke.getHp()<=0) {
+													setScene("kreuzung");}});
+												
+			secondButton.addActionListener(e -> goldGeben(spieler));
+			thirdButton.addActionListener(e -> setScene("draußen"));
+			aktualisiereAnzeige();
+			break;
+			
 		case "wolf":
 			Enemy wolf = new Enemy("Wolf", 30, 1);
 			text.setText("Der Wolf hat 30 Lebenspunkte.");
@@ -173,7 +214,7 @@ public class GameFrame extends JFrame {
 			firstButton.addActionListener(e -> fight(wolf, spieler));
 			thirdButton.addActionListener(e -> setScene("wald"));
 			secondButton.addActionListener(e -> ausweichen(wolf, spieler));
-			
+			aktualisiereAnzeige();
 		break;
 
 		case "dorf":
@@ -208,6 +249,7 @@ public class GameFrame extends JFrame {
 			thirdButton.addActionListener(e -> setScene("dorf"));
 			firstButton.addActionListener(e -> buyWeapon(spieler));
 			secondButton.addActionListener(e -> buyShield(spieler));
+			aktualisiereAnzeige();
 			break;
 		case "goblins":
 			Enemy goblins = new Enemy("Goblins", 60, 3);
@@ -219,6 +261,102 @@ public class GameFrame extends JFrame {
 			firstButton.addActionListener(e -> fight(goblins, spieler));
 			thirdButton.addActionListener(e -> setScene("wald"));
 			secondButton.addActionListener(e -> ausweichen(goblins, spieler));
+			aktualisiereAnzeige();
+			break;
+		case "kreuzung":
+			text.setText("<html>Du erreichst eine Weggabelung.<br> Links geht es in ein Flusstal. <br>Rechts zum Drachenberg hinauf.</html>");
+			secondButton.setVisible(true);
+			thirdButton.setVisible(true);
+			firstButton.setText("Nach Links gehen");
+			secondButton.setText("Nach Rechts gehen");
+			thirdButton.setText("Zurück gehen");
+			thirdButton.addActionListener(e -> setScene("draußen"));
+			firstButton.addActionListener(e -> setScene("flusstal"));
+			secondButton.addActionListener(e -> setScene("drachenberg"));
+			aktualisiereAnzeige();
+			break;
+			
+		case "flusstal":
+			text.setText("<html>Im Flusstal triffst du auf einen Händler.<br> Er erzählt dir, dass der Weg zu einem großen Dorf führt. </html>");
+			picture.setIcon(flusstal);
+			firstButton.setText("Weitergehen");
+			secondButton.setText("Handeln");
+			thirdButton.setText("zurück gehen");
+			thirdButton.addActionListener(e -> setScene("kreuzung"));
+			firstButton.addActionListener(e -> setScene("stadt"));
+			secondButton.addActionListener(e -> handeln(spieler));
+			aktualisiereAnzeige();
+			break;
+		case "drachenberg":
+			text.setText("<html>Als du den Berggipfel erreichst, entdeckst du ein Drachennest mit 4 Eiern darin. <br>"
+					+ "willst du riskieren eines zu nehmen, oder dich lieber vorsichtig zurückziehen?</html>");
+			firstButton.setText("Ein Ei nehmen");
+			secondButton.setText("Verstecken und Beobachten");
+			thirdButton.setText("zurückziehen");
+			
+			thirdButton.addActionListener(e-> setScene("kreuzung"));
+			firstButton.addActionListener(e -> setScene("dragon"));
+			secondButton.addActionListener(e -> setScene("versteck"));
+			
+			aktualisiereAnzeige();
+			break;
+		case "dragon":
+
+			text.setText("Als du dich dem Nest näherst, kommt plötzlich der Drache angeflogen und fixiert dich!");
+			
+			firstButton.setText("Angriff!");
+			secondButton.setText("Ausweichen");
+			thirdButton.setText("Renn weg.");
+			firstButton.addActionListener(e -> {fight(drache, spieler);
+											if(drache.hp <= 0) {
+												dracheBesiegt = 1;
+											}
+											else {
+												dracheBesiegt = 0;
+											}
+			});
+			
+			thirdButton.addActionListener(e -> setScene("kreuzung"));
+			secondButton.addActionListener(e -> ausweichen(drache, spieler));
+			aktualisiereAnzeige();
+			break;
+		case "versteck":
+			text.setText("Du lauerst in deinem Versteck, als auf einmal der Drache zurückkehrt.");
+			firstButton.setText("Angreifen");
+			secondButton.setText("Ausharren, bis der Drache weg ist.");
+			thirdButton.setText("Vorsichtig zurückziehen");
+			firstButton.addActionListener(e -> setScene("dragon"));
+			secondButton.addActionListener(e -> setScene("drachenberg"));
+			thirdButton.addActionListener(e -> setScene("dragon"));
+			
+			break;
+		case "stadt": 
+			if(drache.hp > 0) {
+			text.setText("<html>Du durchquerst die großen Stadttore und befindest dich direkt auf dem Markplatz <br> "
+					+ "Doch dieser wirkt wie ausgestorben. <br> Nur ein einzelner Wachmann erzählt dir von den gefährlichen Drachenangriffen. <br> "
+					+ "Deshalb traut sich niemand mehr auf die Straße.</html>");
+					firstButton.setText("Taverne aufsuchen");
+					secondButton.setText("Kaserne betreten");
+					thirdButton.setText("Stadt verlassen");
+					firstButton.addActionListener(e -> setScene("taverne"));
+					secondButton.addActionListener(e -> setScene("kaserne"));
+					thirdButton.addActionListener(e -> setScene("flusstal"));
+			}
+			else{
+				text.setText("<html>Du durchquerst die großen Stadttore und befindest dich direkt auf dem Markplatz <br>"
+						+ "Viele Menschen sind auf den Straßen und jubeln dir zu. <br>"
+						+ "Du bist nun der gefeierte Drachentöter!</html>");
+				firstButton.setText("An Dorffest teilnehmen.");
+				secondButton.setText("Haus kaufen");
+				thirdButton.setText("Stadt verlassen");
+				firstButton.addActionListener(e -> setScene("dorffest"));
+				secondButton.addActionListener(e -> hausKaufen(spieler));
+				thirdButton.addActionListener(e -> setScene("flusstal"));
+			}
+			break;
+		case "taverne":
+			
+			
 		}
 	}
 	
@@ -251,12 +389,29 @@ public class GameFrame extends JFrame {
 		text.setText(monster.getName() + " hat noch " + monster.getHp() + " Lebenspunkte.");
 	}
 	}
+		aktualisiereAnzeige();
 	}
 	public void aktualisiereAnzeige() {
-		spielerHp.setText("Lebenspunkte: " + spieler.getHp() + " | ");
-		spielerEp.setText("Erfahrung: " + spieler.getEp() + " | ");
-		spielerWeapon.setText("Waffe: " + spieler.getWeapon() + " | ");
+		spielerHp.setText("Lebenspunkte: " + spieler.getHp());
+		spielerEp.setText("Erfahrung: " + spieler.getEp());
+		spielerWeapon.setText("Waffe: " + spieler.getWeapon());
 		spielerGold.setText("Gold: " + spieler.getGold());
+		
+		if(spieler.getHp() <= 10) {
+			spielerHp.setForeground(Color.RED);
+		}
+			else {
+				spielerHp.setForeground(Color.BLACK);
+			}
+		if(spieler.getWeapon() == "Breitschwert") {
+			spielerWeapon.setForeground(Color.YELLOW);
+		}
+		else if(spieler.getWeapon() == "Feuerschwert") {
+			spielerWeapon.setForeground(Color.ORANGE);
+		}
+		else {
+			spielerWeapon.setForeground(Color.BLACK);
+		}
 	}
 	
 	public void ausweichen(Enemy monster, Charakter player) {
@@ -285,6 +440,47 @@ public class GameFrame extends JFrame {
 		aktualisiereAnzeige();
 	}
 	
+	public void handeln(Charakter player) {
+		text.setText("Der Händler hat magische Amulette im Angebot.");
+		for (JButton b : new JButton[]{firstButton, secondButton, thirdButton}) {
+            for (java.awt.event.ActionListener al : b.getActionListeners()) {
+                b.removeActionListener(al);
+            }}
+		firstButton.setText("Magieramulett kaufen");
+		secondButton.setText("Kriegeramulett kaufen");
+		thirdButton.setText("Handel beenden");
+		thirdButton.addActionListener(e -> setScene("flusstal"));
+		firstButton.addActionListener(e -> magieAmulettKaufen(player));
+		secondButton.addActionListener(e -> kriegerAmulettKaufen(player));
+		aktualisiereAnzeige();
+	}
+	
+	//Amulett kann noch trotz zu wenig geld gekauft werden
+	public void magieAmulettKaufen(Charakter player) {
+		int zaehler = 0;
+		if(player.name == "Magier" && zaehler < 1) {
+			player.setGold(player.getGold()-70);
+			player.setStrength(player.getStrength() + 5);
+			zaehler++;
+		}
+		else {
+			text.setText("Du kannst dieses Amulett nicht kaufen. Entweder besitzt du es bereits oder es passt nicht zu deiner Spielerklasse.");
+		}
+	}
+	
+	public void kriegerAmulettKaufen(Charakter player) {
+		int zaehler = 0;
+		if(player.name == "Schwertkämpfer" && zaehler < 1) {
+			player.setGold(player.getGold() - 70);
+			player.setStrength(player.getStrength() + 5);
+			zaehler++;
+		}
+		else {
+			text.setText("Du kannst dieses Amulett nicht kaufen. Entweder besitzt du es bereits oder es passt nicht zu deiner Spielerklasse.");
+		}
+	}
+	
+	
 	public void buyShield(Charakter player) {
 		if(player.getShield() == false && player.getGold()>=30) {
 			player.setShield(true);
@@ -300,6 +496,7 @@ public class GameFrame extends JFrame {
 	public void gameOver() {
 		secondButton.setVisible(false);
 		thirdButton.setVisible(false);
+		picture.setIcon(gameOver);
 		firstButton.setText("Neues Spiel starten.");
 		firstButton.addActionListener(e -> {
 			new StartFrame();
@@ -313,9 +510,21 @@ public class GameFrame extends JFrame {
 			picture.setIcon(wolfBildBW);
 			picture.revalidate();
 			picture.repaint();
+		break;
 		case "Goblins":
 			picture.setIcon(goblinsBW);
+		break;
 	}
+	}
+	public void goldGeben(Charakter player) {
+		if(player.getGold() < 100) {
+			text.setText("Du hast nicht genug Gold");
+		}
+		else {
+		player.setGold(player.getGold()-100);
+		// setScene hier noch
+		setScene("kreuzung");
+		}
 	}
 }
 

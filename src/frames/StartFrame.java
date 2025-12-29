@@ -96,7 +96,7 @@ public class StartFrame extends JFrame {
 			spieler = new Charakter("Magier", "Zauberstab", 80, 0, 1, 0, false);
 		}
 		else if(choice == "Schwertkämpfer") {
-			spieler = new Charakter("Schwertkämpfer", "Schwert", 100, 0, 1, 0, false);
+			spieler = new Charakter("Schwertkämpfer", "Schwert", 100, 0, 20, 0, false);
 		}
 		new GameFrame(spieler);
 		this.setVisible(false);
