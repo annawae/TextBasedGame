@@ -1,0 +1,8 @@
+# Eclipse / Java
+/bin/
+.classpath
+.project
+.settings/
+
+# allow images
+!src/grafiken/**

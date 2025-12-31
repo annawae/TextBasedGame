@@ -33,6 +33,7 @@ public class GameFrame extends JFrame {
 	int bier = 0;
 	Enemy harlunke = new Enemy("Harlunke", 100, 6);
 	Enemy drache = new Enemy("Drache", 250, 15);
+	Enemy turnierGegner = new Enemy("Gegner", 350, 25);
 	
 	JLabel picture = new JLabel();
 	ImageIcon dorf = new ImageIcon(getClass().getResource("/grafiken/dorfplatz.png"));
@@ -52,7 +53,7 @@ public class GameFrame extends JFrame {
 	
 	public GameFrame(Charakter spieler) {
 		this.spieler = spieler;
-		this.setSize(1200,650);
+		this.setSize(1200,850);
 		this.setLayout(new BorderLayout(20,20));
 
 		//Hintergrundfarbe für alle Elemente erstellen:
@@ -413,6 +414,13 @@ public class GameFrame extends JFrame {
 			thirdButton.addActionListener(e -> setScene("dorffest"));
 			break;
 			
+		case "turnierkampf":
+			text.setText("Beweise dich im Kampf und werde Tunier-Champion!");
+			firstButton.setText("Angriff!");
+			secondButton.setText("Ausweichen");
+			thirdButton.setText("Aufgeben");
+			firstButton.addActionListener(e -> fight(turnierGegner, spieler));
+			break;
 		case "winner":
 			text.setText("<html>Herzlichen Glückwunsch!<br>Du hast das Spiel gewonnen!</html>");
 			text.setFont(new Font("Castellar", Font.PLAIN, 24));
