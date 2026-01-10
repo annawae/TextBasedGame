@@ -41,8 +41,8 @@ public class GameFrame extends JFrame {
 	ImageIcon wald = new ImageIcon(getClass().getResource("/grafiken/wald.png"));
 	ImageIcon goblinsBild = new ImageIcon(getClass().getResource("/grafiken/goblins.png"));
 	ImageIcon wolfBild = new ImageIcon(getClass().getResource("/grafiken/wolf.png"));
-	ImageIcon wolfBildBW= new ImageIcon(getClass().getResource("/grafiken/wolf_bw.png"));
-	ImageIcon goblinsBW= new ImageIcon(getClass().getResource("/grafiken/goblins_bw.png"));
+	ImageIcon wolfBildBW= new ImageIcon(getClass().getResource("/grafiken/wolf_BW.png"));
+	ImageIcon goblinsBW= new ImageIcon(getClass().getResource("/grafiken/goblins_BW.png"));
 	ImageIcon gameOver = new ImageIcon(getClass().getResource("/grafiken/gameOver.jpg"));
 	ImageIcon flusstal = new ImageIcon(getClass().getResource("/grafiken/flusstal.png"));
 	ImageIcon stadtMarkt = new ImageIcon(getClass().getResource("/grafiken/stadtMarkt.png"));
